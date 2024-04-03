@@ -1,0 +1,75 @@
+Crear base de datos en clever clud Con nombre XXXX importante nombres para comunicarse con C# deben ser
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+CONCEPTOS:
+PUBLIC: es un modificador de acceso que especifica la visibilidad 
+public readonly: se refiere a la declaración de una variable que es accesible desde fuera de la clase (o estructura) en la que se declara y que además solo puede ser leída,
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                      CarpetaContoler ------------------------------
+                                      UsersController.cs
+
+using Solution.Data;  // usa Solution.Data oara BaseContext
+using Microsoft.AspNetCore.Mvc; // 
+using Microsoft.EntityFrameworkCore;
+namespace Solution.Controllers;
+public class UsersController : Controller
+{
+    public readonly BaseContext _Context;
+    public UsersController(BaseContext context)
+    {
+        _Context = context;
+    }
+    public async Task<IActionResult> Index()
+    {
+        return View(await _Context.Users.ToListAsync());
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                                  CARPETADATA-----------------------------------------------
+                                  BaseContext.cs
+using Microsoft.EntityFrameworkCore;
+using Solution.Models;
+namespace Solution.Data;
+public class SolutionContext : DbContext
+{
+    public SolutionContext(DbContextOptions<SolutionContext> options) : base(options)
+    {
+    }
+    public DbSet<User> Users { get; set; }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                              CARPETAMODELS--------------------------------------------------
+                              User.cs
+namespace Solution.Models;
+public class User
+{
+    public int Id { get; set; }
+    public string?  Names { get; set; }
+     public string?  LastNames { get; set; }
+      public string?  Email { get; set; }
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                            CARPETARAIZ
+                            Program.cs
+
+// Add services to the container.
+builder.Services.AddControllersWithViews();
+///// aqui agrego 
+builder.Services.AddDbContext<SolutionContext> (options => options.UseMySql(
+    builder.Configuration.GetConnectionString("MySqlConnection"),
+    Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.20-mysql")));
+
+
+
+
+    
+
+
+var app = builder.Build();
